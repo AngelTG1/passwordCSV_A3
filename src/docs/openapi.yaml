@@ -1,0 +1,64 @@
+openapi: 3.1.0
+info:
+  title: Password Strength API
+  version: "1.0.0"
+  description: >
+    Evalúa la fuerza de una contraseña usando entropía (E = L * log2(N)), heurísticas y diccionario.
+servers:
+  - url: http://localhost:3000
+paths:
+  /api/v1/password/evaluate:
+    post:
+      summary: Evalúa la fuerza de una contraseña
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [password]
+              properties:
+                password:
+                  type: string
+                  example: "Tr0ub4dor&3"
+      responses:
+        "200":
+          description: Resultado de evaluación
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      passwordLength:
+                        type: integer
+                      alphabetSize:
+                        type: integer
+                      entropyBits:
+                        type: number
+                      category:
+                        type: string
+                        enum: ["Débil/Aceptable","Fuerte","Muy Fuerte","Comprometida"]
+                      estimatedCrackTime:
+                        type: object
+                        properties:
+                          seconds:
+                            type: number
+                          friendly:
+                            type: string
+                          assumptions:
+                            type: string
+                      notes:
+                        type: array
+                        items:
+                          type: string
+                      dictionaryHit:
+                        type: boolean
+        "400":
+          description: Petición inválida
+        "500":
+          description: Error interno
